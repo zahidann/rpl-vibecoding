@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptoflow - Real-time Crypto Analytics & Portfolio Tracker</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            950: '#020617',
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Font Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-white min-h-screen flex flex-col">
+
+    <!-- Top Glow Effect -->
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-32 bg-gradient-to-b from-emerald-500/10 via-cyan-500/5 to-transparent blur-3xl pointer-events-none"></div>
+
+    <!-- Navigation Bar (Tailwind UI Style) -->
+    <nav class="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-emerald-500/20">
+                    <i class="fa-solid fa-coins text-base"></i>
+                </div>
+                <div>
+                    <span class="text-base font-bold tracking-tight text-white">Cryptoflow</span>
+                    <span class="ml-2 px-2 py-0.5 text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full">Pro MVP</span>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <span class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2 animate-pulse"></span>
+                    Market Live
+                </span>
+                <button onclick="triggerAlert('Wallet Web3 (0x8F2...4B1) Berhasil Terhubung')" class="text-xs font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 px-3 py-2 rounded-lg transition active:scale-95">
+                    <i class="fa-solid fa-wallet text-emerald-400 mr-1.5"></i> Connect Wallet
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        
+        <!-- Header Banner -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-800/60">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-white">Crypto Market & Portfolio Dashboard</h1>
+                <p class="text-sm text-slate-400 mt-0.5">Pantau pergerakan harga aset kripto, tren pasar, dan simulasi transaksi aset secara real-time.</p>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="switchTab('tab1')" id="btnNavTab1" class="px-3.5 py-2 text-xs font-medium rounded-lg bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20 transition">
+                    <i class="fa-solid fa-chart-simple mr-1.5"></i> Market Overview
+                </button>
+                <button onclick="switchTab('tab2')" id="btnNavTab2" class="px-3.5 py-2 text-xs font-medium rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition">
+                    <i class="fa-solid fa-arrow-right-arrow-left mr-1.5"></i> Quick Swap / Buy
+                </button>
+            </div>
+        </div>
+
+        <!-- Notification Toast/Banner -->
+        <div id="alertBanner" class="hidden p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-200 flex items-center justify-between backdrop-blur">
+            <div class="flex items-center space-x-3 text-sm">
+                <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+                <span id="alertMessage">Aksi berhasil dijalankan.</span>
+            </div>
+            <button onclick="hideAlert()" class="text-slate-400 hover:text-white text-sm"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <!-- TAB 1: MARKET OVERVIEW & PORTFOLIO METRICS -->
+        <div id="tab1" class="space-y-6">
+            
+            <!-- Summary Metric Cards (Shadcn Style) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="p-5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span class="text-xs font-medium">Total Balance Portofolio</span>
+                        <i class="fa-solid fa-wallet text-emerald-400"></i>
+                    </div>
+                    <div class="mt-3 flex items-baseline space-x-2">
+                        <span class="text-2xl font-bold text-white">$24,850.40</span>
+                        <span class="text-xs text-emerald-400 font-medium"><i class="fa-solid fa-arrow-up text-[10px]"></i> +5.4%</span>
+                    </div>
+                </div>
+
+                <div class="p-5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span class="text-xs font-medium">Bitcoin Price (BTC)</span>
+                        <i class="fa-brands fa-bitcoin text-amber-400"></i>
+                    </div>
+                    <div class="mt-3 flex items-baseline space-x-2">
+                        <span class="text-2xl font-bold text-white">$67,420.00</span>
+                        <span class="text-xs text-emerald-400 font-medium"><i class="fa-solid fa-arrow-up text-[10px]"></i> +2.8%</span>
+                    </div>
+                </div>
+
+                <div class="p-5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span class="text-xs font-medium">Ethereum Price (ETH)</span>
+                        <i class="fa-brands fa-ethereum text-indigo-400"></i>
+                    </div>
+                    <div class="mt-3 flex items-baseline space-x-2">
+                        <span class="text-2xl font-bold text-white">$3,520.15</span>
+                        <span class="text-xs text-rose-400 font-medium"><i class="fa-solid fa-arrow-down text-[10px]"></i> -1.2%</span>
+                    </div>
+                </div>
+
+                <div class="p-5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span class="text-xs font-medium">Market Cap Global</span>
+                        <i class="fa-solid fa-globe text-cyan-400"></i>
+                    </div>
+                    <div class="mt-3 flex items-baseline space-x-2">
+                        <span class="text-2xl font-bold text-white">$2.54 T</span>
+                        <span class="text-[10px] font-mono text-slate-500">24h Vol: $89B</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cryptocurrency Data Table -->
+            <div class="p-6 rounded-xl bg-slate-900/60 border border-slate-800 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
+                    <h3 class="text-base font-bold text-white">Top Assets Cryptocurrency</h3>
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-500"></i>
+                        <input type="text" id="searchInput" onkeyup="filterCryptoTable()" placeholder="Cari koin (BTC, ETH, SOL...)" class="pl-8 pr-4 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-emerald-500 w-full sm:w-64 transition">
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-300" id="cryptoTable">
+                        <thead class="text-[11px] text-slate-400 uppercase bg-slate-950/60 border-b border-slate-800">
+                            <tr>
+                                <th class="py-3 px-4">Aset</th>
+                                <th class="py-3 px-4">Harga</th>
+                                <th class="py-3 px-4">Perubahan 24j</th>
+                                <th class="py-3 px-4">Market Cap</th>
+                                <th class="py-3 px-4 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60">
+                            <!-- Bitcoin -->
+                            <tr class="hover:bg-slate-800/30 transition">
+                                <td class="py-3.5 px-4 flex items-center space-x-3">
+                                    <div class="w-8 h-8 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold">
+                                        <i class="fa-brands fa-bitcoin text-base"></i>
+                                    </div>
+                                    <div>
+                                        <span class="font-bold text-white block">Bitcoin</span>
+                                        <span class="text-[10px] text-slate-500 uppercase">BTC</span>
+                                    </div>
+                                </td>
+                                <td class="py-3.5 px-4 font-semibold text-white">$67,420.00</td>
+                                <td class="py-3.5 px-4 text-emerald-400 font-medium"><i class="fa-solid fa-caret-up mr-1"></i>+2.8%</td>
+                                <td class="py-3.5 px-4 text-slate-400">$1.32 Triliun</td>
+                                <td class="py-3.5 px-4 text-right">
+                                    <button onclick="prepareTrade('BTC', 67420)" class="px-3 py-1 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-slate-950 font-medium rounded-lg border border-emerald-500/20 transition">Beli</button>
+                                </td>
+                            </tr>
+                            <!-- Ethereum -->
+                            <tr class="hover:bg-slate-800/30 transition">
+                                <td class="py-3.5 px-4 flex items-center space-x-3">
+                                    <div class="w-8 h-8 rounded-full bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-bold">
+                                        <i class="fa-brands fa-ethereum text-base"></i>
+                                    </div>
+                                    <div>
+                                        <span class="font-bold text-white block">Ethereum</span>
+                                        <span class="text-[10px] text-slate-500 uppercase">ETH</span>
+                                    </div>
+                                </td>
+                                <td class="py-3.5 px-4 font-semibold text-white">$3,520.15</td>
+                                <td class="py-3.5 px-4 text-rose-400 font-medium"><i class="fa-solid fa-caret-down mr-1"></i>-1.2%</td>
+                                <td class="py-3.5 px-4 text-slate-400">$423 Miliar</td>
+                                <td class="py-3.5 px-4 text-right">
+                                    <button onclick="prepareTrade('ETH', 3520.15)" class="px-3 py-1 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-slate-950 font-medium rounded-lg border border-emerald-500/20 transition">Beli</button>
+                                </td>
+                            </tr>
+                            <!-- Solana -->
+                            <tr class="hover:bg-slate-800/30 transition">
+                                <td class="py-3.5 px-4 flex items-center space-x-3">
+                                    <div class="w-8 h-8 rounded-full bg-purple-500/10 text-purple-400 flex items-center justify-center font-bold">
+                                        <i class="fa-solid fa-bolt text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <span class="font-bold text-white block">Solana</span>
+                                        <span class="text-[10px] text-slate-500 uppercase">SOL</span>
+                                    </div>
+                                </td>
+                                <td class="py-3.5 px-4 font-semibold text-white">$175.80</td>
+                                <td class="py-3.5 px-4 text-emerald-400 font-medium"><i class="fa-solid fa-caret-up mr-1"></i>+8.4%</td>
+                                <td class="py-3.5 px-4 text-slate-400">$82 Miliar</td>
+                                <td class="py-3.5 px-4 text-right">
+                                    <button onclick="prepareTrade('SOL', 175.80)" class="px-3 py-1 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-slate-950 font-medium rounded-lg border border-emerald-500/20 transition">Beli</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: SWAP / BUY CRYPTO FORM -->
+        <div id="tab2" class="hidden space-y-6">
+            <div class="max-w-md mx-auto p-6 rounded-xl bg-slate-900/60 border border-slate-800 space-y-4 shadow-xl">
+                <div>
+                    <h3 class="text-base font-bold text-white">Simulasi Instan Swap & Beli</h3>
+                    <p class="text-xs text-slate-400">Konversi saldo USD kamu ke dalam aset kripto secara langsung.</p>
+                </div>
+
+                <form onsubmit="handleTradeSubmit(event)" class="space-y-4 pt-2">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1.5">Jumlah Pembelian (USD)</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2.5 text-xs text-slate-500">$</span>
+                            <input type="number" id="usdAmount" oninput="calculateCryptoAmount()" placeholder="100" required class="w-full bg-slate-950 border border-slate-800 rounded-lg pl-7 pr-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1.5">Pilih Koin Tujuan</label>
+                        <select id="coinSelect" onchange="calculateCryptoAmount()" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 transition">
+                            <option value="67420">Bitcoin (BTC) - $67,420</option>
+                            <option value="3520.15">Ethereum (ETH) - $3,520.15</option>
+                            <option value="175.80">Solana (SOL) - $175.80</option>
+                        </select>
+                    </div>
+
+                    <div class="p-3 rounded-lg bg-slate-950 border border-slate-800/80 text-xs space-y-1 font-mono">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Estimasi Diterima:</span>
+                            <span class="text-emerald-400 font-bold" id="cryptoEstimated">0.000000</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Biaya Jaringan (Slippage):</span>
+                            <span class="text-slate-300">0.1%</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold py-2.5 rounded-lg shadow-lg shadow-emerald-500/20 transition active:scale-[0.99]">
+                        Eksekusi Transaksi
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="border-t border-slate-800/60 py-6 text-center text-xs text-slate-500">
+        <p>© 2026 Cryptoflow MVP. Built for Portfolio & Software Showcase.</p>
+    </footer>
+
+    <!-- JavaScript Navigation & Logic -->
+    <script>
+        function switchTab(tabId) {
+            const tab1 = document.getElementById('tab1');
+            const tab2 = document.getElementById('tab2');
+            const btn1 = document.getElementById('btnNavTab1');
+            const btn2 = document.getElementById('btnNavTab2');
+
+            if (tabId === 'tab1') {
+                tab1.classList.remove('hidden');
+                tab2.classList.add('hidden');
+                btn1.className = "px-3.5 py-2 text-xs font-medium rounded-lg bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20 transition";
+                btn2.className = "px-3.5 py-2 text-xs font-medium rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition";
+            } else {
+                tab1.classList.add('hidden');
+                tab2.classList.remove('hidden');
+                btn2.className = "px-3.5 py-2 text-xs font-medium rounded-lg bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20 transition";
+                btn1.className = "px-3.5 py-2 text-xs font-medium rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition";
+            }
+        }
+
+        function triggerAlert(msg) {
+            document.getElementById('alertMessage').innerText = msg;
+            document.getElementById('alertBanner').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function hideAlert() {
+            document.getElementById('alertBanner').classList.add('hidden');
+        }
+
+        function prepareTrade(symbol, price) {
+            switchTab('tab2');
+            const select = document.getElementById('coinSelect');
+            select.value = price;
+            calculateCryptoAmount();
+        }
+
+        function calculateCryptoAmount() {
+            const usd = parseFloat(document.getElementById('usdAmount').value) || 0;
+            const price = parseFloat(document.getElementById('coinSelect').value);
+            const estimated = usd / price;
+            document.getElementById('cryptoEstimated').innerText = estimated.toFixed(6);
+        }
+
+        function handleTradeSubmit(e) {
+            e.preventDefault();
+            const usd = document.getElementById('usdAmount').value;
+            triggerAlert(`Sukses! Pembelian aset kripto senilai $${usd} telah diproses ke portofolio kamu.`);
+            e.target.reset();
+            document.getElementById('cryptoEstimated').innerText = "0.000000";
+            setTimeout(() => switchTab('tab1'), 1500);
+        }
+
+        function filterCryptoTable() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#cryptoTable tbody tr');
+
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(input) ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "cryptoflow-mvp",
+  "version": "1.0.0",
+  "description": "Cryptoflow - Crypto Portfolio & Market Tracker Dashboard MVP",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve ."
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+}
